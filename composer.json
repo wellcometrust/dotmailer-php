@@ -1,0 +1,27 @@
+{
+    "name": "wellcometrust/dotmailer-php",
+    "description": "PHP Client library for the Dotmailer REST (v2) API",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Adam Neale",
+            "email": "adam@adam-neale.co.uk"
+        }
+    ],
+    "require": {
+        "guzzlehttp/guzzle": "^6.3"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Dotmailer\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Dotmailer\\": "tests/"
+        }
+    }
+}
