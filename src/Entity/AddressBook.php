@@ -2,7 +2,7 @@
 
 namespace Dotmailer\Entity;
 
-final class AddressBook
+final class AddressBook implements Arrayable
 {
     const VISIBILITY_PRIVATE = 'Private';
     const VISIBILITY_PUBLIC = 'Public';
@@ -49,19 +49,6 @@ final class AddressBook
         $addressBook->setContacts($data['contacts']);
 
         return $addressBook;
-    }
-
-    /**
-     * @return array
-     */
-    public function asArray(): array
-    {
-        return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'visibility' => $this->visibility,
-            'contacts' => $this->contacts,
-        ];
     }
 
     /**
@@ -126,5 +113,18 @@ final class AddressBook
     public function setContacts(int $contacts)
     {
         $this->contacts = $contacts;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function asArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'visibility' => $this->visibility,
+            'contacts' => $this->contacts,
+        ];
     }
 }

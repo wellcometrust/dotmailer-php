@@ -2,7 +2,7 @@
 
 namespace Dotmailer\Entity;
 
-final class Campaign
+final class Campaign implements Arrayable
 {
     const REPLY_ACTION_UNSET = 'Unset';
     const STATUS_UNSENT = 'Unsent';
@@ -120,26 +120,6 @@ final class Campaign
         $campaign->setId($data['id']);
 
         return $campaign;
-    }
-
-    /**
-     * @return array
-     */
-    public function asArray(): array
-    {
-        return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'subject' => $this->subject,
-            'fromName' => $this->fromName,
-            'htmlContent' => $this->htmlContent,
-            'plainTextContent' => $this->plainTextContent,
-            'fromAddress' => $this->fromAddress ? $this->fromAddress->asArray() : null,
-            'replyAction' => $this->replyAction,
-            'replyToAddress' => $this->replyToAddress,
-            'isSplitTest' => $this->isSplitTest,
-            'status' => $this->status,
-        ];
     }
 
     /**
@@ -316,5 +296,25 @@ final class Campaign
     public function setStatus(string $status)
     {
         $this->status = $status;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function asArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'subject' => $this->subject,
+            'fromName' => $this->fromName,
+            'htmlContent' => $this->htmlContent,
+            'plainTextContent' => $this->plainTextContent,
+            'fromAddress' => $this->fromAddress ? $this->fromAddress->asArray() : null,
+            'replyAction' => $this->replyAction,
+            'replyToAddress' => $this->replyToAddress,
+            'isSplitTest' => $this->isSplitTest,
+            'status' => $this->status,
+        ];
     }
 }

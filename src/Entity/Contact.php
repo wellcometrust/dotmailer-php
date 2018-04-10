@@ -2,7 +2,7 @@
 
 namespace Dotmailer\Entity;
 
-final class Contact
+final class Contact implements Arrayable
 {
     const OPT_IN_TYPE_UNKNOWN = 'Unknown';
     const OPT_IN_TYPE_SINGLE = 'Single';
@@ -71,20 +71,6 @@ final class Contact
         $contact->setId($data['id']);
 
         return $contact;
-    }
-
-    /**
-     * @return array
-     */
-    public function asArray(): array
-    {
-        return [
-            'id' => $this->id,
-            'email' => $this->email,
-            'optInType' => $this->optInType,
-            'emailType' => $this->emailType,
-            'dataFields' => $this->dataFields,
-        ];
     }
 
     /**
@@ -201,5 +187,19 @@ final class Contact
         }
 
         $this->dataFields[] = ['key' => $key, 'value' => $value];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function asArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'email' => $this->email,
+            'optInType' => $this->optInType,
+            'emailType' => $this->emailType,
+            'dataFields' => $this->dataFields,
+        ];
     }
 }

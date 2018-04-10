@@ -2,7 +2,7 @@
 
 namespace Dotmailer\Entity;
 
-final class Program
+final class Program implements Arrayable
 {
     const STATUS_ACTIVE = 'Active';
 
@@ -85,5 +85,18 @@ final class Program
     public function getDateCreated(): \DateTimeInterface
     {
         return $this->dateCreated;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function asArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'status' => $this->status,
+            'dateCreated' => $this->dateCreated,
+        ];
     }
 }

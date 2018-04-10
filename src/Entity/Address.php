@@ -2,7 +2,7 @@
 
 namespace Dotmailer\Entity;
 
-final class Address
+final class Address implements Arrayable
 {
     /**
      * @var int|null
@@ -36,17 +36,6 @@ final class Address
     }
 
     /**
-     * @return array
-     */
-    public function asArray(): array
-    {
-        return [
-            'id' => $this->id,
-            'email' => $this->email
-        ];
-    }
-
-    /**
      * @return int|null
      */
     public function getId(): ?int
@@ -76,5 +65,16 @@ final class Address
     public function setEmail(string $email)
     {
         $this->email = $email;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function asArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'email' => $this->email
+        ];
     }
 }
