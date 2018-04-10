@@ -34,7 +34,7 @@ class Dotmailer
     /**
      * @return ResponseInterface|null
      */
-    public function getResponse()
+    public function getResponse(): ?ResponseInterface
     {
         return $this->response;
     }

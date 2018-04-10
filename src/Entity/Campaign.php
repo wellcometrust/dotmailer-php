@@ -145,7 +145,7 @@ final class Campaign
     /**
      * @return int|null
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -209,7 +209,7 @@ final class Campaign
     /**
      * @return string|null
      */
-    public function getHtmlContent()
+    public function getHtmlContent(): ?string
     {
         return $this->htmlContent;
     }
@@ -225,7 +225,7 @@ final class Campaign
     /**
      * @return string|null
      */
-    public function getPlainTextContent()
+    public function getPlainTextContent(): ?string
     {
         return $this->plainTextContent;
     }
@@ -239,9 +239,9 @@ final class Campaign
     }
 
     /**
-     * @return Address|null
+     * @return Address
      */
-    public function getFromAddress()
+    public function getFromAddress(): ?Address
     {
         return $this->fromAddress;
     }
