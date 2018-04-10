@@ -6,29 +6,45 @@ use Dotmailer\Entity\AddressBook;
 use Dotmailer\Entity\Campaign;
 use Dotmailer\Entity\Contact;
 use Dotmailer\Entity\Program;
-use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Psr\Http\Message\ResponseInterface;
 use function GuzzleHttp\json_decode;
 
 class Dotmailer
 {
+    const DEFAULT_URI = 'https://r1-api.dotmailer.com';
+
     /**
      * @var ResponseInterface|null
      */
     private $response;
 
     /**
-     * @var ClientInterface
+     * @var Client
      */
     private $client;
 
     /**
-     * @param ClientInterface $client
+     * @param string $username
+     * @param string $password
+     * @param string $baseUri
      */
-    public function __construct(ClientInterface $client)
+    public function __construct(string $username, string $password, string $baseUri = self::DEFAULT_URI)
     {
-        $this->client = $client;
+        $this->client = new Client(
+            [
+                'base_uri' => $baseUri,
+                'auth' => [
+                    $username,
+                    $password,
+                ],
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json',
+                ]
+            ]
+        );
     }
 
     /**

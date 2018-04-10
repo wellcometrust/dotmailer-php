@@ -12,21 +12,7 @@ Usage
 <?php
 require_once('vendor/autoload.php');
 
-$client = new \GuzzleHttp\Client(
-    [
-        'base_uri' => 'https://r1-api.dotmailer.com',
-        'auth' => [
-            'apiuser-XYZ@apiconnector.com',
-            'PASSWORD',
-        ],
-        'headers' => [
-            'Accept' => 'application/json',
-            'Content-Type' => 'application/json',
-        ]
-    ]
-);
-
-$dotmailer = new \Dotmailer\Dotmailer($client);
+$dotmailer = new \Dotmailer\Dotmailer('apiuser-XYZ@apiconnector.com', 'PASSWORD');
 $addressBooks = $dotmailer->getAddressBooks();
 ```
 
