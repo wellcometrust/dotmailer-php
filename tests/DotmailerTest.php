@@ -188,7 +188,17 @@ class DotmailerTest extends TestCase
             ->with('/v2/programs')
             ->willReturn($this->getResponse([$programData]));
 
-        $this->assertEquals([Program::fromArray($programData)], $this->dotmailer->getPrograms());
+        $this->assertEquals(
+            [
+                new Program(
+                    $programData['id'],
+                    $programData['name'],
+                    $programData['status'],
+                    new \DateTime($programData['dateCreated'])
+                )
+            ],
+            $this->dotmailer->getPrograms()
+        );
     }
 
     public function testCreateProgramEnrolment()
@@ -293,8 +303,7 @@ class DotmailerTest extends TestCase
      */
     private function getAddressBook(): AddressBook
     {
-        $addressBook = new AddressBook(self::NAME);
-        $addressBook->setId(self::ID);
+        $addressBook = new AddressBook(self::ID, self::NAME);
 
         return $addressBook;
     }
@@ -305,18 +314,14 @@ class DotmailerTest extends TestCase
     private function getCampaign(): Campaign
     {
         $campaign = new Campaign(
+            self::ID,
             self::NAME,
             self::SUBJECT,
             self::FROM_NAME,
             self::HTML_CONTENT,
-            self::PLAIN_TEXT_CONTENT
+            self::PLAIN_TEXT_CONTENT,
+            new Address(self::ID, self::EMAIL)
         );
-
-        $campaign->setId(self::ID);
-
-        $fromAddress = new Address(self::EMAIL);
-        $fromAddress->setId(self::ID);
-        $campaign->setFromAddress($fromAddress);
 
         return $campaign;
     }
@@ -326,8 +331,7 @@ class DotmailerTest extends TestCase
      */
     private function getContact(): Contact
     {
-        $contact = new Contact(self::EMAIL);
-        $contact->setId(self::ID);
+        $contact = new Contact(self::ID, self::EMAIL);
 
         return $contact;
     }

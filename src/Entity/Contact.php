@@ -38,39 +38,24 @@ final class Contact implements Arrayable
     private $dataFields;
 
     /**
+     * @param int $id
      * @param string $email
      * @param string $optInType
      * @param string $emailType
      * @param array $dataFields
      */
     public function __construct(
+        int $id,
         string $email,
         string $optInType = self::OPT_IN_TYPE_UNKNOWN,
         string $emailType = self::EMAIL_TYPE_PLAIN_TEXT,
         array $dataFields = []
     ) {
+        $this->id = $id;
         $this->email = $email;
         $this->optInType = $optInType;
         $this->emailType = $emailType;
         $this->dataFields = $dataFields;
-    }
-
-    /**
-     * @param array $data
-     *
-     * @return self
-     */
-    public static function fromArray(array $data): self
-    {
-        $contact = new Contact(
-            $data['email'],
-            $data['optInType'],
-            $data['emailType'],
-            $data['dataFields']
-        );
-        $contact->setId($data['id']);
-
-        return $contact;
     }
 
     /**
@@ -82,27 +67,11 @@ final class Contact implements Arrayable
     }
 
     /**
-     * @param int $id
-     */
-    public function setId(int $id)
-    {
-        $this->id = $id;
-    }
-
-    /**
      * @return string
      */
     public function getEmail(): string
     {
         return $this->email;
-    }
-
-    /**
-     * @param string $email
-     */
-    public function setEmail(string $email)
-    {
-        $this->email = $email;
     }
 
     /**
@@ -127,14 +96,6 @@ final class Contact implements Arrayable
     public function getEmailType(): string
     {
         return $this->emailType;
-    }
-
-    /**
-     * @param string $emailType
-     */
-    public function setEmailType(string $emailType)
-    {
-        $this->emailType = $emailType;
     }
 
     /**

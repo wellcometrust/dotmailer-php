@@ -41,21 +41,6 @@ final class Program implements Arrayable
     }
 
     /**
-     * @param array $data
-     *
-     * @return self
-     */
-    public static function fromArray(array $data): self
-    {
-        return new self(
-            $data['id'],
-            $data['name'],
-            $data['status'],
-            new \DateTimeImmutable($data['dateCreated'])
-        );
-    }
-
-    /**
      * @return int
      */
     public function getId(): int
