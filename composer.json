@@ -2,6 +2,7 @@
     "name": "wellcometrust/dotmailer-php",
     "description": "PHP Client library for the Dotmailer REST (v2) API",
     "type": "library",
+    "license": "MIT",
     "authors": [
         {
             "name": "Adam Neale",
