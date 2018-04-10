@@ -1,5 +1,6 @@
-/build/
-/vendor/
+/build/*
+!/build/.gitkeep
+/vendor
 /phpunit.xml
 /.idea
 .DS_Store

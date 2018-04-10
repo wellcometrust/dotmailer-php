@@ -102,7 +102,6 @@ final class Campaign
      * @param array $data
      *
      * @return self
-     * @SuppressWarnings(PHPMD.StaticAccess)
      */
     public static function fromArray(array $data): self
     {
