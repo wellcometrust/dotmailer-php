@@ -2,33 +2,34 @@
 
 namespace Dotmailer;
 
+use Dotmailer\Adapter\Adapter;
 use Dotmailer\Entity\AddressBook;
 use Dotmailer\Entity\Campaign;
 use Dotmailer\Entity\Contact;
 use Dotmailer\Entity\Program;
-use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\GuzzleException;
 use Psr\Http\Message\ResponseInterface;
 use function GuzzleHttp\json_decode;
 
 class Dotmailer
 {
+    const DEFAULT_URI = 'https://r1-api.dotmailer.com';
+
+    /**
+     * @var Adapter
+     */
+    private $adapter;
+
     /**
      * @var ResponseInterface|null
      */
     private $response;
 
     /**
-     * @var ClientInterface
+     * @param Adapter $adapter
      */
-    private $client;
-
-    /**
-     * @param ClientInterface $client
-     */
-    public function __construct(ClientInterface $client)
+    public function __construct(Adapter $adapter)
     {
-        $this->client = $client;
+        $this->adapter = $adapter;
     }
 
     /**
@@ -41,11 +42,10 @@ class Dotmailer
 
     /**
      * @return AddressBook[]
-     * @throws GuzzleException
      */
     public function getAddressBooks(): array
     {
-        $this->response = $this->client->request('GET', '/v2/address-books');
+        $this->response = $this->adapter->get('/v2/address-books');
         $addressBooks = [];
 
         foreach (json_decode($this->response->getBody()->getContents(), true) as $addressBook) {
@@ -57,11 +57,10 @@ class Dotmailer
 
     /**
      * @return Campaign[]
-     * @throws GuzzleException
      */
     public function getAllCampaigns(): array
     {
-        $this->response = $this->client->request('GET', '/v2/campaigns');
+        $this->response = $this->adapter->get('/v2/campaigns');
         $campaigns = [];
 
         foreach (json_decode($this->response->getBody()->getContents(), true) as $campaign) {
@@ -75,11 +74,10 @@ class Dotmailer
      * @param int $id
      *
      * @return Campaign
-     * @throws GuzzleException
      */
     public function getCampaign(int $id): Campaign
     {
-        $this->response = $this->client->request('GET', '/v2/campaigns/' . $id);
+        $this->response = $this->adapter->get('/v2/campaigns/' . $id);
 
         return Campaign::fromArray(
             json_decode($this->response->getBody()->getContents(), true)
@@ -88,57 +86,42 @@ class Dotmailer
 
     /**
      * @param Contact $contact
-     *
-     * @throws GuzzleException
      */
     public function createContact(Contact $contact)
     {
-        $this->response = $this->client->request(
-            'POST',
-            '/v2/contacts',
-            ['json' => $contact->asArray()]
-        );
+        $this->response = $this->adapter->post('/v2/contacts', $contact->asArray());
     }
 
     /**
      * @param Contact $contact
-     *
-     * @throws GuzzleException
      */
     public function updateContact(Contact $contact)
     {
-        $this->response = $this->client->request(
-            'PUT',
+        $this->response = $this->adapter->put(
             '/v2/contacts/' . $contact->getId(),
-            ['json' => $contact->asArray()]
+            $contact->asArray()
         );
     }
 
     /**
      * @param Contact $contact
      * @param AddressBook $addressBook
-     *
-     * @throws GuzzleException
      */
     public function addContactToAddressBook(Contact $contact, AddressBook $addressBook)
     {
-        $this->response = $this->client->request(
-            'POST',
+        $this->response = $this->adapter->post(
             '/v2/address-books/' . $addressBook->getId(). '/contacts',
-            ['json' => $contact->asArray()]
+            $contact->asArray()
         );
     }
 
     /**
      * @param Contact $contact
      * @param AddressBook $addressBook
-     *
-     * @throws GuzzleException
      */
     public function deleteContactFromAddressBook(Contact $contact, AddressBook $addressBook)
     {
-        $this->response = $this->client->request(
-            'DELETE',
+        $this->response = $this->adapter->delete(
             '/v2/address-books/' . $addressBook->getId(). '/contacts/' . $contact->getId()
         );
     }
@@ -147,11 +130,10 @@ class Dotmailer
      * @param string $email
      *
      * @return Contact
-     * @throws GuzzleException
      */
     public function getContactByEmail(string $email): Contact
     {
-        $this->response =  $this->client->request('GET', '/v2/contacts/' . $email);
+        $this->response =  $this->adapter->get('/v2/contacts/' . $email);
 
         return Contact::fromArray(
             json_decode($this->response->getBody()->getContents(), true)
@@ -162,14 +144,10 @@ class Dotmailer
      * @param Contact $contact
      *
      * @return AddressBook[]
-     * @throws GuzzleException
      */
     public function getContactAddressBooks(Contact $contact): array
     {
-        $this->response = $this->client->request(
-            'GET',
-            '/v2/contacts/' . $contact->getId() . '/address-books'
-        );
+        $this->response = $this->adapter->get('/v2/contacts/' . $contact->getId() . '/address-books');
 
         $addressBooks = [];
 
@@ -182,11 +160,10 @@ class Dotmailer
 
     /**
      * @return Program[]
-     * @throws GuzzleException
      */
     public function getPrograms(): array
     {
-        $this->response = $this->client->request('GET', '/v2/programs');
+        $this->response = $this->adapter->get('/v2/programs');
         $programs = [];
 
         foreach (json_decode($this->response->getBody()->getContents(), true) as $program) {
@@ -200,30 +177,25 @@ class Dotmailer
      * @param Program $program
      * @param Contact[] $contacts
      * @param AddressBook[] $addressBooks
-     *
-     * @throws GuzzleException
      */
     public function createProgramEnrolment(Program $program, array $contacts = [], array $addressBooks = [])
     {
-        $this->response = $this->client->request(
-            'POST',
+        $this->response = $this->adapter->post(
             '/v2/programs/enrolments',
             [
-                'json' => [
-                    'programId' => $program->getId(),
-                    'contacts' => array_map(
-                        function (Contact $contact) {
-                            return $contact->getId();
-                        },
-                        $contacts
-                    ),
-                    'addressBooks' => array_map(
-                        function (AddressBook $addressBook) {
-                            return $addressBook->getId();
-                        },
-                        $addressBooks
-                    ),
-                ]
+                'programId' => $program->getId(),
+                'contacts' => array_map(
+                    function (Contact $contact) {
+                        return $contact->getId();
+                    },
+                    $contacts
+                ),
+                'addressBooks' => array_map(
+                    function (AddressBook $addressBook) {
+                        return $addressBook->getId();
+                    },
+                    $addressBooks
+                ),
             ]
         );
     }
@@ -236,8 +208,6 @@ class Dotmailer
      * @param string $plainTextContent
      * @param string[] $ccAddresses
      * @param string[] $bccAddresses
-     *
-     * @throws GuzzleException
      */
     public function sendTransactionalEmail(
         array $toAddresses,
@@ -248,19 +218,16 @@ class Dotmailer
         array $ccAddresses = [],
         array $bccAddresses = []
     ) {
-        $this->response = $this->client->request(
-            'POST',
+        $this->response = $this->adapter->post(
             '/v2/email',
             [
-                'json' => [
-                    'toAddresses' => $toAddresses,
-                    'subject' => $subject,
-                    'fromAddress' => $fromAddress,
-                    'htmlContent' => $htmlContent,
-                    'plainTextContent' => $plainTextContent,
-                    'ccAddresses' => $ccAddresses,
-                    'bccAddresses' => $bccAddresses,
-                ]
+                'toAddresses' => $toAddresses,
+                'subject' => $subject,
+                'fromAddress' => $fromAddress,
+                'htmlContent' => $htmlContent,
+                'plainTextContent' => $plainTextContent,
+                'ccAddresses' => $ccAddresses,
+                'bccAddresses' => $bccAddresses,
             ]
         );
     }
@@ -269,32 +236,27 @@ class Dotmailer
      * @param string[] $toAddresses
      * @param int $campaignId
      * @param string[] $personalizationValues
-     *
-     * @throws GuzzleException
      */
     public function sendTransactionalEmailUsingATriggeredCampaign(
         array $toAddresses,
         int $campaignId,
         array $personalizationValues
     ) {
-        $this->response = $this->client->request(
-            'POST',
+        $this->response = $this->adapter->post(
             '/v2/email/triggered-campaign',
             [
-                'json' => [
-                    'toAddresses' => $toAddresses,
-                    'campaignId' => $campaignId,
-                    'personalizationValues' => array_map(
-                        function (string $name, string $value) {
-                            return [
-                                'Name' => strtoupper($name),
-                                'Value' => $value
-                            ];
-                        },
-                        array_keys($personalizationValues),
-                        $personalizationValues
-                    ),
-                ]
+                'toAddresses' => $toAddresses,
+                'campaignId' => $campaignId,
+                'personalizationValues' => array_map(
+                    function (string $name, string $value) {
+                        return [
+                            'Name' => strtoupper($name),
+                            'Value' => $value
+                        ];
+                    },
+                    array_keys($personalizationValues),
+                    $personalizationValues
+                ),
             ]
         );
     }

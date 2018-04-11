@@ -2,15 +2,15 @@
 
 namespace Dotmailer;
 
+use Dotmailer\Adapter\Adapter;
 use Dotmailer\Entity\Address;
 use Dotmailer\Entity\AddressBook;
 use Dotmailer\Entity\Campaign;
 use Dotmailer\Entity\Contact;
 use Dotmailer\Entity\Program;
-use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Psr7\Response;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\StreamInterface;
 use function GuzzleHttp\json_encode;
 
 class DotmailerTest extends TestCase
@@ -24,27 +24,30 @@ class DotmailerTest extends TestCase
     const FROM_NAME = 'test name';
 
     /**
-     * @var ClientInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var Adapter|MockObject
      */
-    private $client;
+    private $adapter;
 
     /**
      * @var Dotmailer
      */
     private $dotmailer;
 
+    /**
+     * @throws \ReflectionException
+     */
     public function setUp()
     {
-        $this->client = $this->createMock(ClientInterface::class);
-        $this->dotmailer = new Dotmailer($this->client);
+        $this->adapter = $this->createMock(Adapter::class);
+        $this->dotmailer = new Dotmailer($this->adapter);
     }
 
     public function testGetAddressBooks()
     {
-        $this->client
+        $this->adapter
             ->expects($this->once())
-            ->method('request')
-            ->with('GET', '/v2/address-books')
+            ->method('get')
+            ->with('/v2/address-books')
             ->willReturn(
                 $this->getResponse(
                     [$this->getAddressBook()->asArray()]
@@ -56,10 +59,10 @@ class DotmailerTest extends TestCase
 
     public function testGetAllCampaigns()
     {
-        $this->client
+        $this->adapter
             ->expects($this->once())
-            ->method('request')
-            ->with('GET', '/v2/campaigns')
+            ->method('get')
+            ->with('/v2/campaigns')
             ->willReturn(
                 $this->getResponse(
                     [$this->getCampaign()->asArray()]
@@ -71,10 +74,10 @@ class DotmailerTest extends TestCase
 
     public function testGetCampaign()
     {
-        $this->client
+        $this->adapter
             ->expects($this->once())
-            ->method('request')
-            ->with('GET', '/v2/campaigns/' . self::ID)
+            ->method('get')
+            ->with('/v2/campaigns/' . self::ID)
             ->willReturn(
                 $this->getResponse($this->getCampaign()->asArray())
             );
@@ -86,10 +89,10 @@ class DotmailerTest extends TestCase
     {
         $response = $this->getResponse();
 
-        $this->client
+        $this->adapter
             ->expects($this->once())
-            ->method('request')
-            ->with('POST', '/v2/contacts', ['json' => $this->getContact()->asArray()])
+            ->method('post')
+            ->with('/v2/contacts', $this->getContact()->asArray())
             ->willReturn($response);
 
         $this->dotmailer->createContact($this->getContact());
@@ -101,10 +104,10 @@ class DotmailerTest extends TestCase
     {
         $response = $this->getResponse();
 
-        $this->client
+        $this->adapter
             ->expects($this->once())
-            ->method('request')
-            ->with('PUT', '/v2/contacts/' . self::ID, ['json' => $this->getContact()->asArray()])
+            ->method('put')
+            ->with('/v2/contacts/' . self::ID, $this->getContact()->asArray())
             ->willReturn($response);
 
         $this->dotmailer->updateContact($this->getContact());
@@ -116,10 +119,10 @@ class DotmailerTest extends TestCase
     {
         $response = $this->getResponse();
 
-        $this->client
+        $this->adapter
             ->expects($this->once())
-            ->method('request')
-            ->with('POST', '/v2/address-books/' . self::ID . '/contacts', ['json' => $this->getContact()->asArray()])
+            ->method('post')
+            ->with('/v2/address-books/' . self::ID . '/contacts', $this->getContact()->asArray())
             ->willReturn($response);
 
         $this->dotmailer->addContactToAddressBook($this->getContact(), $this->getAddressBook());
@@ -131,10 +134,10 @@ class DotmailerTest extends TestCase
     {
         $response = $this->getResponse();
 
-        $this->client
+        $this->adapter
             ->expects($this->once())
-            ->method('request')
-            ->with('DELETE', '/v2/address-books/' . self::ID . '/contacts/' . self::ID)
+            ->method('delete')
+            ->with('/v2/address-books/' . self::ID . '/contacts/' . self::ID)
             ->willReturn($response);
 
         $this->dotmailer->deleteContactFromAddressBook($this->getContact(), $this->getAddressBook());
@@ -144,10 +147,10 @@ class DotmailerTest extends TestCase
 
     public function testGetContactByEmail()
     {
-        $this->client
+        $this->adapter
             ->expects($this->once())
-            ->method('request')
-            ->with('GET', '/v2/contacts/' . self::EMAIL)
+            ->method('get')
+            ->with('/v2/contacts/' . self::EMAIL)
             ->willReturn(
                 $this->getResponse($this->getContact()->asArray())
             );
@@ -157,10 +160,10 @@ class DotmailerTest extends TestCase
 
     public function testGetContactAddressBooks()
     {
-        $this->client
+        $this->adapter
             ->expects($this->once())
-            ->method('request')
-            ->with('GET', '/v2/contacts/' . self::ID . '/address-books')
+            ->method('get')
+            ->with('/v2/contacts/' . self::ID . '/address-books')
             ->willReturn(
                 $this->getResponse(
                     [$this->getAddressBook()->asArray()]
@@ -179,10 +182,10 @@ class DotmailerTest extends TestCase
             'dateCreated' => '2013-01-08T14:56:53',
         ];
 
-        $this->client
+        $this->adapter
             ->expects($this->once())
-            ->method('request')
-            ->with('GET', '/v2/programs')
+            ->method('get')
+            ->with('/v2/programs')
             ->willReturn($this->getResponse([$programData]));
 
         $this->assertEquals([Program::fromArray($programData)], $this->dotmailer->getPrograms());
@@ -192,18 +195,15 @@ class DotmailerTest extends TestCase
     {
         $response = $this->getResponse();
 
-        $this->client
+        $this->adapter
             ->expects($this->once())
-            ->method('request')
+            ->method('post')
             ->with(
-                'POST',
                 '/v2/programs/enrolments',
                 [
-                    'json' => [
-                        'programId' => self::ID,
-                        'contacts' => [self::ID],
-                        'addressBooks' => [self::ID],
-                    ],
+                    'programId' => self::ID,
+                    'contacts' => [self::ID],
+                    'addressBooks' => [self::ID],
                 ]
             )->willReturn($response);
 
@@ -216,22 +216,19 @@ class DotmailerTest extends TestCase
     {
         $response = $this->getResponse();
 
-        $this->client
+        $this->adapter
             ->expects($this->once())
-            ->method('request')
+            ->method('post')
             ->with(
-                'POST',
                 '/v2/email',
                 [
-                    'json' => [
-                        'toAddresses' => [self::EMAIL],
-                        'subject' => self::SUBJECT,
-                        'fromAddress' => self::EMAIL,
-                        'htmlContent' => self::HTML_CONTENT,
-                        'plainTextContent' => self::PLAIN_TEXT_CONTENT,
-                        'ccAddresses' => [],
-                        'bccAddresses' => [],
-                    ]
+                    'toAddresses' => [self::EMAIL],
+                    'subject' => self::SUBJECT,
+                    'fromAddress' => self::EMAIL,
+                    'htmlContent' => self::HTML_CONTENT,
+                    'plainTextContent' => self::PLAIN_TEXT_CONTENT,
+                    'ccAddresses' => [],
+                    'bccAddresses' => [],
                 ]
             )
             ->willReturn($response);
@@ -251,22 +248,19 @@ class DotmailerTest extends TestCase
     {
         $response = $this->getResponse();
 
-        $this->client
+        $this->adapter
             ->expects($this->once())
-            ->method('request')
+            ->method('post')
             ->with(
-                'POST',
                 '/v2/email/triggered-campaign',
                 [
-                    'json' => [
-                        'toAddresses' => [self::EMAIL],
-                        'campaignId' => self::ID,
-                        'personalizationValues' => [
-                            ['Name' => 'FOO', 'Value' => 'qux'],
-                            ['Name' => 'BAR', 'Value' => 'quux'],
-                            ['Name' => 'BAZ', 'Value' => 'quuz'],
-                        ],
-                    ]
+                    'toAddresses' => [self::EMAIL],
+                    'campaignId' => self::ID,
+                    'personalizationValues' => [
+                        ['Name' => 'FOO', 'Value' => 'qux'],
+                        ['Name' => 'BAR', 'Value' => 'quux'],
+                        ['Name' => 'BAZ', 'Value' => 'quuz'],
+                    ],
                 ]
             )
             ->willReturn($response);
@@ -287,19 +281,16 @@ class DotmailerTest extends TestCase
     /**
      * @param array $contents
      *
-     * @return ResponseInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @return Response
      */
-    private function getResponse(array $contents = [])
+    private function getResponse(array $contents = []): Response
     {
-        $body = $this->createMock(StreamInterface::class);
-        $body->method('getContents')->willReturn(json_encode($contents));
-
-        $response = $this->createMock(ResponseInterface::class);
-        $response->method('getBody')->willReturn($body);
-
-        return $response;
+        return new Response(200, [], json_encode($contents));
     }
 
+    /**
+     * @return AddressBook
+     */
     private function getAddressBook(): AddressBook
     {
         $addressBook = new AddressBook(self::NAME);
@@ -308,6 +299,9 @@ class DotmailerTest extends TestCase
         return $addressBook;
     }
 
+    /**
+     * @return Campaign
+     */
     private function getCampaign(): Campaign
     {
         $campaign = new Campaign(
@@ -327,6 +321,9 @@ class DotmailerTest extends TestCase
         return $campaign;
     }
 
+    /**
+     * @return Contact
+     */
     private function getContact(): Contact
     {
         $contact = new Contact(self::EMAIL);
@@ -335,6 +332,9 @@ class DotmailerTest extends TestCase
         return $contact;
     }
 
+    /**
+     * @return Program
+     */
     private function getProgram(): Program
     {
         return new Program(self::ID, 'test program', Program::STATUS_ACTIVE, new \DateTime());
