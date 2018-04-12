@@ -123,8 +123,8 @@ final class Contact implements Arrayable
         $key = strtoupper($key);
 
         foreach ($this->dataFields as $dataField) {
-            if ($dataField['key'] === $key) {
-                return $dataField['value'];
+            if ($dataField->key === $key) {
+                return $dataField->value;
             }
         }
 
@@ -140,14 +140,14 @@ final class Contact implements Arrayable
         $key = strtoupper($key);
 
         foreach ($this->dataFields as &$dataField) {
-            if ($dataField['key'] === $key) {
-                $dataField['value'] = $value;
+            if ($dataField->key === $key) {
+                $dataField->value = $value;
 
                 return;
             }
         }
 
-        $this->dataFields[] = ['key' => $key, 'value' => $value];
+        $this->dataFields[] = (object) ['key' => $key, 'value' => $value];
     }
 
     /**
