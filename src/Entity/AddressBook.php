@@ -28,13 +28,17 @@ final class AddressBook implements Arrayable
     private $contacts;
 
     /**
-     * @param int $id
+     * @param int|null $id
      * @param string $name
      * @param string $visibility
      * @param int $contacts
      */
-    public function __construct(int $id, string $name, string $visibility = self::VISIBILITY_PRIVATE, int $contacts = 0)
-    {
+    public function __construct(
+        ?int $id,
+        string $name,
+        string $visibility = self::VISIBILITY_PRIVATE,
+        int $contacts = 0
+    ) {
         $this->id = $id;
         $this->name = $name;
         $this->visibility = $visibility;

@@ -58,7 +58,7 @@ abstract class Campaign implements Arrayable
     private $status;
 
     /**
-     * @param int $id
+     * @param int|null $id
      * @param string $name
      * @param string $subject
      * @param string $fromName
@@ -72,7 +72,7 @@ abstract class Campaign implements Arrayable
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
-        int $id,
+        ?int $id,
         string $name,
         string $subject,
         string $fromName,

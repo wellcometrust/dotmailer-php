@@ -38,14 +38,14 @@ final class Contact implements Arrayable
     private $dataFields;
 
     /**
-     * @param int $id
+     * @param int|null $id
      * @param string $email
      * @param string $optInType
      * @param string $emailType
      * @param array $dataFields
      */
     public function __construct(
-        int $id,
+        ?int $id,
         string $email,
         string $optInType = self::OPT_IN_TYPE_UNKNOWN,
         string $emailType = self::EMAIL_TYPE_PLAIN_TEXT,
@@ -61,7 +61,7 @@ final class Contact implements Arrayable
     /**
      * @return int|null
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }

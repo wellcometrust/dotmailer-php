@@ -15,10 +15,10 @@ final class Address implements Arrayable
     private $email;
 
     /**
-     * @param int $id
+     * @param int|null $id
      * @param string $email
      */
-    public function __construct(int $id, string $email)
+    public function __construct(?int $id, string $email)
     {
         $this->id = $id;
         $this->email = $email;
