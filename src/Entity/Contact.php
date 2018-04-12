@@ -38,17 +38,20 @@ final class Contact implements Arrayable
     private $dataFields;
 
     /**
+     * @param int|null $id
      * @param string $email
      * @param string $optInType
      * @param string $emailType
      * @param array $dataFields
      */
     public function __construct(
+        ?int $id,
         string $email,
         string $optInType = self::OPT_IN_TYPE_UNKNOWN,
         string $emailType = self::EMAIL_TYPE_PLAIN_TEXT,
         array $dataFields = []
     ) {
+        $this->id = $id;
         $this->email = $email;
         $this->optInType = $optInType;
         $this->emailType = $emailType;
@@ -56,37 +59,11 @@ final class Contact implements Arrayable
     }
 
     /**
-     * @param array $data
-     *
-     * @return self
-     */
-    public static function fromArray(array $data): self
-    {
-        $contact = new Contact(
-            $data['email'],
-            $data['optInType'],
-            $data['emailType'],
-            $data['dataFields']
-        );
-        $contact->setId($data['id']);
-
-        return $contact;
-    }
-
-    /**
      * @return int|null
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
-    }
-
-    /**
-     * @param int $id
-     */
-    public function setId(int $id)
-    {
-        $this->id = $id;
     }
 
     /**
@@ -95,14 +72,6 @@ final class Contact implements Arrayable
     public function getEmail(): string
     {
         return $this->email;
-    }
-
-    /**
-     * @param string $email
-     */
-    public function setEmail(string $email)
-    {
-        $this->email = $email;
     }
 
     /**
@@ -130,14 +99,6 @@ final class Contact implements Arrayable
     }
 
     /**
-     * @param string $emailType
-     */
-    public function setEmailType(string $emailType)
-    {
-        $this->emailType = $emailType;
-    }
-
-    /**
      * @return array
      */
     public function getDataFields(): array
@@ -162,8 +123,8 @@ final class Contact implements Arrayable
         $key = strtoupper($key);
 
         foreach ($this->dataFields as $dataField) {
-            if ($dataField['key'] === $key) {
-                return $dataField['value'];
+            if ($dataField->key === $key) {
+                return $dataField->value;
             }
         }
 
@@ -179,14 +140,14 @@ final class Contact implements Arrayable
         $key = strtoupper($key);
 
         foreach ($this->dataFields as &$dataField) {
-            if ($dataField['key'] === $key) {
-                $dataField['value'] = $value;
+            if ($dataField->key === $key) {
+                $dataField->value = $value;
 
                 return;
             }
         }
 
-        $this->dataFields[] = ['key' => $key, 'value' => $value];
+        $this->dataFields[] = (object) ['key' => $key, 'value' => $value];
     }
 
     /**

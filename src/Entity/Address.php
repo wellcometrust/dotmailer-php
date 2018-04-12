@@ -15,24 +15,13 @@ final class Address implements Arrayable
     private $email;
 
     /**
+     * @param int|null $id
      * @param string $email
      */
-    public function __construct(string $email)
+    public function __construct(?int $id, string $email)
     {
+        $this->id = $id;
         $this->email = $email;
-    }
-
-    /**
-     * @param array $data
-     *
-     * @return self
-     */
-    public static function fromArray(array $data): self
-    {
-        $address = new self($data['email']);
-        $address->id = $data['id'];
-
-        return $address;
     }
 
     /**
@@ -44,27 +33,11 @@ final class Address implements Arrayable
     }
 
     /**
-     * @param int $id
-     */
-    public function setId(int $id)
-    {
-        $this->id = $id;
-    }
-
-    /**
      * @return string
      */
     public function getEmail(): string
     {
         return $this->email;
-    }
-
-    /**
-     * @param string $email
-     */
-    public function setEmail(string $email)
-    {
-        $this->email = $email;
     }
 
     /**

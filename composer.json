@@ -30,7 +30,7 @@
     },
     "scripts": {
         "analyse": [
-            "@php vendor/bin/phpcs --report=checkstyle --report-file=build/checkstyle.xml",
+            "@php vendor/bin/phpcs --error-severity=0 --report=checkstyle --report-file=build/checkstyle.xml",
             "@php vendor/bin/phpmd src xml phpmd.xml --suffixes=php --reportfile build/phpmd-summary.xml --ignore-violations-on-exit"
         ]
     }

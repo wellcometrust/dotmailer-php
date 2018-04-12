@@ -7,7 +7,7 @@ final class Program implements Arrayable
     const STATUS_ACTIVE = 'Active';
 
     /**
-     * @var int
+     * @var int|null
      */
     private $id;
 
@@ -27,12 +27,12 @@ final class Program implements Arrayable
     private $dateCreated;
 
     /**
-     * @param int $id
+     * @param int|null $id
      * @param string $name
      * @param string $status
      * @param \DateTimeInterface $dateCreated
      */
-    public function __construct(int $id, string $name, string $status, \DateTimeInterface $dateCreated)
+    public function __construct(?int $id, string $name, string $status, \DateTimeInterface $dateCreated)
     {
         $this->id = $id;
         $this->name = $name;
@@ -41,24 +41,9 @@ final class Program implements Arrayable
     }
 
     /**
-     * @param array $data
-     *
-     * @return self
+     * @return int|null
      */
-    public static function fromArray(array $data): self
-    {
-        return new self(
-            $data['id'],
-            $data['name'],
-            $data['status'],
-            new \DateTimeImmutable($data['dateCreated'])
-        );
-    }
-
-    /**
-     * @return int
-     */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }

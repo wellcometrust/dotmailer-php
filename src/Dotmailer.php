@@ -7,6 +7,7 @@ use Dotmailer\Entity\AddressBook;
 use Dotmailer\Entity\Campaign;
 use Dotmailer\Entity\Contact;
 use Dotmailer\Entity\Program;
+use Dotmailer\Factory\CampaignFactory;
 use Psr\Http\Message\ResponseInterface;
 use function GuzzleHttp\json_decode;
 
@@ -48,8 +49,13 @@ class Dotmailer
         $this->response = $this->adapter->get('/v2/address-books');
         $addressBooks = [];
 
-        foreach (json_decode($this->response->getBody()->getContents(), true) as $addressBook) {
-            $addressBooks[] = AddressBook::fromArray($addressBook);
+        foreach (json_decode($this->response->getBody()->getContents()) as $addressBook) {
+            $addressBooks[] = new AddressBook(
+                $addressBook->id,
+                $addressBook->name,
+                $addressBook->visibility,
+                $addressBook->contacts
+            );
         }
 
         return $addressBooks;
@@ -57,14 +63,16 @@ class Dotmailer
 
     /**
      * @return Campaign[]
+     *
+     * @SuppressWarnings(PHPMD.StaticAccess)
      */
     public function getAllCampaigns(): array
     {
         $this->response = $this->adapter->get('/v2/campaigns');
         $campaigns = [];
 
-        foreach (json_decode($this->response->getBody()->getContents(), true) as $campaign) {
-            $campaigns[] = Campaign::fromArray($campaign);
+        foreach (json_decode($this->response->getBody()->getContents()) as $campaign) {
+            $campaigns[] = CampaignFactory::build($campaign);
         }
 
         return $campaigns;
@@ -74,13 +82,15 @@ class Dotmailer
      * @param int $id
      *
      * @return Campaign
+     *
+     * @SuppressWarnings(PHPMD.StaticAccess)
      */
     public function getCampaign(int $id): Campaign
     {
         $this->response = $this->adapter->get('/v2/campaigns/' . $id);
 
-        return Campaign::fromArray(
-            json_decode($this->response->getBody()->getContents(), true)
+        return CampaignFactory::build(
+            json_decode($this->response->getBody()->getContents())
         );
     }
 
@@ -135,8 +145,14 @@ class Dotmailer
     {
         $this->response =  $this->adapter->get('/v2/contacts/' . $email);
 
-        return Contact::fromArray(
-            json_decode($this->response->getBody()->getContents(), true)
+        $contact = json_decode($this->response->getBody()->getContents());
+
+        return new Contact(
+            $contact->id,
+            $contact->email,
+            $contact->optInType,
+            $contact->emailType,
+            $contact->dataFields
         );
     }
 
@@ -151,8 +167,13 @@ class Dotmailer
 
         $addressBooks = [];
 
-        foreach (json_decode($this->response->getBody()->getContents(), true) as $addressBook) {
-            $addressBooks[] = AddressBook::fromArray($addressBook);
+        foreach (json_decode($this->response->getBody()->getContents()) as $addressBook) {
+            $addressBooks[] = new AddressBook(
+                $addressBook->id,
+                $addressBook->name,
+                $addressBook->visibility,
+                $addressBook->contacts
+            );
         }
 
         return $addressBooks;
@@ -166,8 +187,13 @@ class Dotmailer
         $this->response = $this->adapter->get('/v2/programs');
         $programs = [];
 
-        foreach (json_decode($this->response->getBody()->getContents(), true) as $program) {
-            $programs[] = Program::fromArray($program);
+        foreach (json_decode($this->response->getBody()->getContents()) as $program) {
+            $programs[] = new Program(
+                $program->id,
+                $program->name,
+                $program->status,
+                new \DateTimeImmutable($program->dateCreated)
+            );
         }
 
         return $programs;

@@ -25,30 +25,24 @@ final class AddressBook implements Arrayable
     /**
      * @var int
      */
-    private $contacts = 0;
+    private $contacts;
 
     /**
+     * @param int|null $id
      * @param string $name
      * @param string $visibility
+     * @param int $contacts
      */
-    public function __construct(string $name, string $visibility = self::VISIBILITY_PRIVATE)
-    {
+    public function __construct(
+        ?int $id,
+        string $name,
+        string $visibility = self::VISIBILITY_PRIVATE,
+        int $contacts = 0
+    ) {
+        $this->id = $id;
         $this->name = $name;
         $this->visibility = $visibility;
-    }
-
-    /**
-     * @param array $data
-     *
-     * @return self
-     */
-    public static function fromArray(array $data): self
-    {
-        $addressBook = new self($data['name'], $data['visibility']);
-        $addressBook->setId($data['id']);
-        $addressBook->setContacts($data['contacts']);
-
-        return $addressBook;
+        $this->contacts = $contacts;
     }
 
     /**
@@ -60,27 +54,11 @@ final class AddressBook implements Arrayable
     }
 
     /**
-     * @param int $id
-     */
-    public function setId(int $id)
-    {
-        $this->id = $id;
-    }
-
-    /**
      * @return string
      */
     public function getName(): string
     {
         return $this->name;
-    }
-
-    /**
-     * @param string $name
-     */
-    public function setName(string $name)
-    {
-        $this->name = $name;
     }
 
     /**
@@ -92,27 +70,11 @@ final class AddressBook implements Arrayable
     }
 
     /**
-     * @param string $visibility
-     */
-    public function setVisibility(string $visibility)
-    {
-        $this->visibility = $visibility;
-    }
-
-    /**
      * @return int
      */
     public function getContacts(): int
     {
         return $this->contacts;
-    }
-
-    /**
-     * @param int $contacts
-     */
-    public function setContacts(int $contacts)
-    {
-        $this->contacts = $contacts;
     }
 
     /**
