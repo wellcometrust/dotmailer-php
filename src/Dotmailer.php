@@ -7,6 +7,7 @@ use Dotmailer\Entity\AddressBook;
 use Dotmailer\Entity\Campaign;
 use Dotmailer\Entity\Contact;
 use Dotmailer\Entity\Program;
+use Dotmailer\Factory\CampaignFactory;
 use Psr\Http\Message\ResponseInterface;
 use function GuzzleHttp\json_decode;
 
@@ -62,14 +63,16 @@ class Dotmailer
 
     /**
      * @return Campaign[]
+     *
+     * @SuppressWarnings(PHPMD.StaticAccess)
      */
     public function getAllCampaigns(): array
     {
         $this->response = $this->adapter->get('/v2/campaigns');
         $campaigns = [];
 
-        foreach (json_decode($this->response->getBody()->getContents(), true) as $campaign) {
-            $campaigns[] = Campaign::fromArray($campaign);
+        foreach (json_decode($this->response->getBody()->getContents()) as $campaign) {
+            $campaigns[] = CampaignFactory::build($campaign);
         }
 
         return $campaigns;
@@ -79,13 +82,15 @@ class Dotmailer
      * @param int $id
      *
      * @return Campaign
+     *
+     * @SuppressWarnings(PHPMD.StaticAccess)
      */
     public function getCampaign(int $id): Campaign
     {
         $this->response = $this->adapter->get('/v2/campaigns/' . $id);
 
-        return Campaign::fromArray(
-            json_decode($this->response->getBody()->getContents(), true)
+        return CampaignFactory::build(
+            json_decode($this->response->getBody()->getContents())
         );
     }
 

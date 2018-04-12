@@ -2,7 +2,7 @@
 
 namespace Dotmailer\Entity;
 
-final class Campaign implements Arrayable
+abstract class Campaign implements Arrayable
 {
     const REPLY_ACTION_UNSET = 'Unset';
     const STATUS_UNSENT = 'Unsent';
@@ -53,11 +53,6 @@ final class Campaign implements Arrayable
     private $replyToAddress;
 
     /**
-     * @var bool
-     */
-    private $isSplitTest;
-
-    /**
      * @var string
      */
     private $status;
@@ -72,8 +67,9 @@ final class Campaign implements Arrayable
      * @param Address $fromAddress
      * @param string $replyAction
      * @param string $replyToAddress
-     * @param bool $isSplitTest
      * @param string $status
+     *
+     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
         int $id,
@@ -85,7 +81,6 @@ final class Campaign implements Arrayable
         Address $fromAddress = null,
         string $replyAction = self::REPLY_ACTION_UNSET,
         string $replyToAddress = '',
-        bool $isSplitTest = false,
         string $status = self::STATUS_UNSENT
     ) {
         $this->id = $id;
@@ -97,35 +92,7 @@ final class Campaign implements Arrayable
         $this->fromAddress = $fromAddress;
         $this->replyAction = $replyAction;
         $this->replyToAddress = $replyToAddress;
-        $this->isSplitTest = $isSplitTest;
         $this->status = $status;
-    }
-
-    /**
-     * @param array $data
-     *
-     * @return self
-     */
-    public static function fromArray(array $data): self
-    {
-        $campaign = new self(
-            $data['id'],
-            $data['name'],
-            $data['subject'],
-            $data['fromName'],
-            $data['htmlContent'],
-            $data['plainTextContent'],
-            new Address(
-                $data['fromAddress']['id'],
-                $data['fromAddress']['email']
-            ),
-            $data['replyAction'],
-            $data['replyToAddress'] ?? '',
-            $data['isSplitTest'],
-            $data['status']
-        );
-
-        return $campaign;
     }
 
     /**
@@ -201,20 +168,17 @@ final class Campaign implements Arrayable
     }
 
     /**
-     * @return bool
-     */
-    public function isSplitTest(): bool
-    {
-        return $this->isSplitTest;
-    }
-
-    /**
      * @return string
      */
     public function getStatus(): string
     {
         return $this->status;
     }
+
+    /**
+     * @return bool
+     */
+    abstract public function isSplitTest(): bool;
 
     /**
      * @inheritdoc
@@ -231,7 +195,7 @@ final class Campaign implements Arrayable
             'fromAddress' => $this->fromAddress ? $this->fromAddress->asArray() : null,
             'replyAction' => $this->replyAction,
             'replyToAddress' => $this->replyToAddress,
-            'isSplitTest' => $this->isSplitTest,
+            'isSplitTest' => $this->isSplitTest(),
             'status' => $this->status,
         ];
     }

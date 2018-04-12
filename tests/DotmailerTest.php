@@ -8,6 +8,7 @@ use Dotmailer\Entity\AddressBook;
 use Dotmailer\Entity\Campaign;
 use Dotmailer\Entity\Contact;
 use Dotmailer\Entity\Program;
+use Dotmailer\Entity\StandardCampaign;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -313,7 +314,7 @@ class DotmailerTest extends TestCase
      */
     private function getCampaign(): Campaign
     {
-        $campaign = new Campaign(
+        $campaign = new StandardCampaign(
             self::ID,
             self::NAME,
             self::SUBJECT,
