@@ -7,6 +7,7 @@ use Dotmailer\Entity\Address;
 use Dotmailer\Entity\AddressBook;
 use Dotmailer\Entity\Campaign;
 use Dotmailer\Entity\Contact;
+use Dotmailer\Entity\DataField;
 use Dotmailer\Entity\Program;
 use Dotmailer\Entity\StandardCampaign;
 use GuzzleHttp\Psr7\Response;
@@ -23,6 +24,7 @@ class DotmailerTest extends TestCase
     const HTML_CONTENT = '<strong>foo</strong>';
     const PLAIN_TEXT_CONTENT = 'foo';
     const FROM_NAME = 'test name';
+    const DATA_FIELD = 'DATAFIELD';
 
     /**
      * @var Adapter|MockObject
@@ -172,6 +174,38 @@ class DotmailerTest extends TestCase
             );
 
         $this->assertEquals([$this->getAddressBook()], $this->dotmailer->getContactAddressBooks($this->getContact()));
+    }
+
+    public function testCreateContactDataField()
+    {
+        $dataField = new DataField(self::DATA_FIELD, DataField::TYPE_STRING);
+        $response = $this->getResponse();
+
+        $this->adapter
+            ->expects($this->once())
+            ->method('post')
+            ->with('/v2/data-fields', $dataField->asArray())
+            ->willReturn($response);
+
+        $this->dotmailer->createContactDataField($dataField);
+
+        $this->assertEquals($response, $this->dotmailer->getResponse());
+    }
+
+    public function testDeleteContactDataField()
+    {
+        $dataField = new DataField(self::DATA_FIELD, DataField::TYPE_STRING);
+        $response = $this->getResponse();
+
+        $this->adapter
+            ->expects($this->once())
+            ->method('delete')
+            ->with('/v2/data-fields/' . self::DATA_FIELD)
+            ->willReturn($response);
+
+        $this->dotmailer->deleteContactDataField($dataField);
+
+        $this->assertEquals($response, $this->dotmailer->getResponse());
     }
 
     public function testGetPrograms()
