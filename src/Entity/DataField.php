@@ -2,7 +2,7 @@
 
 namespace Dotmailer\Entity;
 
-class DataField implements Arrayable
+final class DataField implements Arrayable
 {
     const TYPE_STRING = 'String';
     const TYPE_NUMERIC = 'Numeric';
