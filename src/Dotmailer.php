@@ -6,6 +6,7 @@ use Dotmailer\Adapter\Adapter;
 use Dotmailer\Entity\AddressBook;
 use Dotmailer\Entity\Campaign;
 use Dotmailer\Entity\Contact;
+use Dotmailer\Entity\DataField;
 use Dotmailer\Entity\Program;
 use Dotmailer\Factory\CampaignFactory;
 use Psr\Http\Message\ResponseInterface;
@@ -211,6 +212,22 @@ class Dotmailer
         ];
 
         $this->response = $this->adapter->post('/v2/contacts/resubscribe', array_filter($content));
+    }
+
+    /**
+     * @param DataField $dataField
+     */
+    public function createContactDataField(DataField $dataField)
+    {
+        $this->response = $this->adapter->post('/v2/data-fields', $dataField->asArray());
+    }
+
+    /**
+     * @param DataField $dataField
+     */
+    public function deleteContactDataField(DataField $dataField)
+    {
+        $this->response = $this->adapter->delete('/v2/data-fields/' . $dataField->getName());
     }
 
     /**

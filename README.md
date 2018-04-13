@@ -46,6 +46,9 @@ Currently the following endpoints are covered:
     - [x] Get contact address books
     - [x] Unsubscribe contact
     - [x] Resubscribe contact
+- [ ] **Contact data fields**
+    - [x] Create contact data field
+    - [x] Delete contact data field
 - [ ] **Programs**
     - [x] Get programs
     - [x] Create program enrolment
