@@ -188,6 +188,32 @@ class Dotmailer
     }
 
     /**
+     * @param Contact $contact
+     */
+    public function unsubscribeContact(Contact $contact)
+    {
+        $this->response = $this->adapter->post('/v2/contacts/unsubscribe', ['email' => $contact->getEmail()]);
+    }
+
+    /**
+     * @param Contact $contact
+     * @param string|null $preferredLocale
+     * @param string|null $challengeUrl
+     */
+    public function resubscribeContact(Contact $contact, string $preferredLocale = null, string $challengeUrl = null)
+    {
+        $content = [
+            'unsubscribedContact' => [
+                'email' => $contact->getEmail()
+            ],
+            'preferredLocale' => $preferredLocale,
+            'returnUrlToUseIfChallenged' => $challengeUrl,
+        ];
+
+        $this->response = $this->adapter->post('/v2/contacts/resubscribe', array_filter($content));
+    }
+
+    /**
      * @return Program[]
      */
     public function getPrograms(): array

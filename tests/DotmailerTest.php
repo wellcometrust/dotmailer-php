@@ -23,6 +23,8 @@ class DotmailerTest extends TestCase
     const HTML_CONTENT = '<strong>foo</strong>';
     const PLAIN_TEXT_CONTENT = 'foo';
     const FROM_NAME = 'test name';
+    const LOCALE = 'en-GB';
+    const WEBSITE = 'http://foo.bar/baz';
 
     /**
      * @var Adapter|MockObject
@@ -188,6 +190,48 @@ class DotmailerTest extends TestCase
             );
 
         $this->assertEquals([$this->getAddressBook()], $this->dotmailer->getContactAddressBooks($this->getContact()));
+    }
+
+    public function testUnsubscribeContact()
+    {
+        $response = $this->getResponse();
+
+        $this->adapter
+            ->expects($this->once())
+            ->method('post')
+            ->with(
+                '/v2/contacts/unsubscribe',
+                [
+                    'email' => self::EMAIL
+                ]
+            )->willReturn($response);
+
+        $this->dotmailer->unsubscribeContact($this->getContact());
+
+        $this->assertEquals($response, $this->dotmailer->getResponse());
+    }
+
+    public function testResubscribeContact()
+    {
+        $response = $this->getResponse();
+
+        $this->adapter
+            ->expects($this->once())
+            ->method('post')
+            ->with(
+                '/v2/contacts/resubscribe',
+                [
+                    'unsubscribedContact' => [
+                        'email' => self::EMAIL
+                    ],
+                    'preferredLocale' => self::LOCALE,
+                    'returnUrlToUseIfChallenged' => self::WEBSITE,
+                ]
+            )->willReturn($response);
+
+        $this->dotmailer->resubscribeContact($this->getContact(), self::LOCALE, self::WEBSITE);
+
+        $this->assertEquals($response, $this->dotmailer->getResponse());
     }
 
     public function testGetPrograms()
