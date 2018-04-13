@@ -105,6 +105,14 @@ class Dotmailer
     /**
      * @param Contact $contact
      */
+    public function deleteContact(Contact $contact)
+    {
+        $this->response = $this->adapter->delete('/v2/contacts/' . $contact->getId());
+    }
+
+    /**
+     * @param Contact $contact
+     */
     public function updateContact(Contact $contact)
     {
         $this->response = $this->adapter->put(
@@ -143,7 +151,7 @@ class Dotmailer
      */
     public function getContactByEmail(string $email): Contact
     {
-        $this->response =  $this->adapter->get('/v2/contacts/' . $email);
+        $this->response = $this->adapter->get('/v2/contacts/' . $email);
 
         $contact = json_decode($this->response->getBody()->getContents());
 
