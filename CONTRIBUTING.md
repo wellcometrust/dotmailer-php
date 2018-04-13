@@ -13,7 +13,7 @@ We actively welcome your pull requests.
 We use GitHub issues to track public bugs. Please ensure your description is
 clear and has sufficient instructions to be able to reproduce the issue.
 
-## Coding Style  
+## Coding Style
 We use a slightly modified version of [PSR2](https://www.php-fig.org/psr/psr-2/).
 Run `vendor/bin/phpcs` to check you are conforming to the coding style rules
 
