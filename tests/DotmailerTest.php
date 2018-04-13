@@ -101,6 +101,22 @@ class DotmailerTest extends TestCase
         $this->assertEquals($response, $this->dotmailer->getResponse());
     }
 
+    public function testDeleteContact()
+    {
+        $contact = $this->getContact();
+        $response = $this->getResponse();
+
+        $this->adapter
+            ->expects($this->once())
+            ->method('delete')
+            ->with('/v2/contacts/' . $contact->getId())
+            ->willReturn($response);
+
+        $this->dotmailer->deleteContact($contact);
+
+        $this->assertEquals($response, $this->dotmailer->getResponse());
+    }
+
     public function testUpdateContact()
     {
         $response = $this->getResponse();

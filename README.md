@@ -38,6 +38,7 @@ Currently the following endpoints are covered:
     - [x] Get campaign
 - [ ] **Contacts**
     - [x] Create contact
+    - [x] Delete contact
     - [x] Update contact
     - [x] Add contact to address book
     - [x] Delete contact from address book
