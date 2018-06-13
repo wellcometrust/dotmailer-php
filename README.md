@@ -9,10 +9,18 @@ Installation
 Usage
 ---
 ```
+<?php
+
+use Dotmailer\Adapter\GuzzleAdapter;
+use Dotmailer\Dotmailer;
+
+require 'vendor/autoload.php';
+
 $adapter = GuzzleAdapter::fromCredentials('apiuser-XYZ@apiconnector.com', 'PASSWORD');
 $dotmailer = new Dotmailer($adapter);
 
 $addressBooks = $dotmailer->getAddressBooks();
+print_r($addressBooks);
 ```
 
 If you are using Symfony, you may choose to configure the service as follows, and then use throughout your application:
