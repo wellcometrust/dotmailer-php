@@ -8,10 +8,11 @@ interface Adapter
 {
     /**
      * @param string $url
+     * @param array $params
      *
      * @return ResponseInterface
      */
-    public function get(string $url): ResponseInterface;
+    public function get(string $url, array $params = []): ResponseInterface;
 
     /**
      * @param string $url

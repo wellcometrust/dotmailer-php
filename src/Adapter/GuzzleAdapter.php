@@ -54,9 +54,9 @@ class GuzzleAdapter implements Adapter
     /**
      * @inheritdoc
      */
-    public function get(string $url): ResponseInterface
+    public function get(string $url, array $params = []): ResponseInterface
     {
-        return $this->client->request('GET', $url);
+        return $this->client->request('GET', $url, ['query' => $params]);
     }
 
     /**
