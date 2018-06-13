@@ -189,6 +189,44 @@ class Dotmailer
     }
 
     /**
+     * @param \DateTimeInterface $dateTime
+     * @param int|null $select
+     * @param int|null $skip
+     *
+     * @return Contact[]
+     */
+    public function getUnsubscribedContactsSince(
+        \DateTimeInterface $dateTime,
+        int $select = null,
+        int $skip = null
+    ): array {
+        $this->response = $this->adapter->get(
+            '/v2/contacts/unsubscribed-since/' . $dateTime->format('Y-m-d'),
+            array_filter([
+                'select' => $select,
+                'skip' => $skip,
+            ])
+        );
+
+        $unsubscriptions = [];
+
+        foreach (json_decode($this->response->getBody()->getContents()) as $unsubscription) {
+            $unsubscriptions[] = [
+                'suppressedContact' => new Contact(
+                    $unsubscription->suppressedContact->id,
+                    $unsubscription->suppressedContact->email,
+                    $unsubscription->suppressedContact->optInType,
+                    $unsubscription->suppressedContact->emailType
+                ),
+                'dateRemoved' => new \DateTime($unsubscription->dateRemoved),
+                'reason' => $unsubscription->reason,
+            ];
+        }
+
+        return $unsubscriptions;
+    }
+
+    /**
      * @param Contact $contact
      */
     public function unsubscribeContact(Contact $contact)

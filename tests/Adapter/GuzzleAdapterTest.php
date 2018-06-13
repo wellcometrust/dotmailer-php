@@ -69,10 +69,10 @@ class GuzzleAdapterTest extends TestCase
         $this->client
             ->expects($this->once())
             ->method('request')
-            ->with('GET', self::URL)
+            ->with('GET', self::URL, ['query' => self::CONTENT])
             ->willReturn($this->response);
 
-        $this->assertEquals($this->response, $this->adapter->get(self::URL));
+        $this->assertEquals($this->response, $this->adapter->get(self::URL, self::CONTENT));
     }
 
     public function testPost()
