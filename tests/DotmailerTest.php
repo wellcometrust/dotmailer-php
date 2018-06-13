@@ -27,6 +27,7 @@ class DotmailerTest extends TestCase
     const LOCALE = 'en-GB';
     const WEBSITE = 'http://foo.bar/baz';
     const DATA_FIELD = 'DATAFIELD';
+    const DATE_FROM = '2018-01-01';
 
     /**
      * @var Adapter|MockObject
@@ -192,6 +193,45 @@ class DotmailerTest extends TestCase
             );
 
         $this->assertEquals([$this->getAddressBook()], $this->dotmailer->getContactAddressBooks($this->getContact()));
+    }
+
+    public function testGetUnsubscribedContactsSince()
+    {
+        $contact = $this->getContact();
+        $dateRemoved = new \DateTime('2018-01-10');
+
+        $this->adapter
+            ->expects($this->once())
+            ->method('get')
+            ->with(
+                '/v2/contacts/unsubscribed-since/' . self::DATE_FROM,
+                [
+                    'select' => 1,
+                    'skip' => 2,
+                ]
+            )
+            ->willReturn(
+                $this->getResponse(
+                    [
+                        [
+                            'suppressedContact' => $contact->asArray(),
+                            'dateRemoved' => $dateRemoved->format('Y-m-d'),
+                            'reason' => 'unsubscribed',
+                        ]
+                    ]
+                )
+            );
+
+        $this->assertEquals(
+            [
+                [
+                    'suppressedContact' => $contact,
+                    'dateRemoved' => $dateRemoved,
+                    'reason' => 'unsubscribed',
+                ]
+            ],
+            $this->dotmailer->getUnsubscribedContactsSince(new \DateTime(self::DATE_FROM), 1, 2)
+        );
     }
 
     public function testUnsubscribeContact()
