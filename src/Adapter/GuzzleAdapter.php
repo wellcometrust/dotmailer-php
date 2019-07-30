@@ -82,4 +82,23 @@ class GuzzleAdapter implements Adapter
     {
         return $this->client->request('DELETE', $url);
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public function postfile(string $url, string $filePath, string $fileName, string $mimeType): ResponseInterface
+    {
+        return $this->client->request('POST', $url, [
+            'multipart' => [
+                [
+                    'name' => 'file',
+                    'contents' => fopen($filePath, 'r'), // Just the resource; Guzzle handles the contents internally
+                    'filename' => $fileName,
+                    'headers' => [
+                        'Content-Type' => $mimeType
+                    ]
+                ]
+            ]
+        ]);
+    }
 }

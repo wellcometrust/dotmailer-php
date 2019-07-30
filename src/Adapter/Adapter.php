@@ -36,4 +36,12 @@ interface Adapter
      * @return ResponseInterface
      */
     public function delete(string $url): ResponseInterface;
+    
+    /**
+     * @param string $url
+     * @param string $filename
+     *
+     * @return ResponseInterface
+     */
+    public function postfile(string $url, string $filePath, string $fileName, string $mimeType): ResponseInterface;
 }

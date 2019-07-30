@@ -7,6 +7,8 @@
          xsi:noNamespaceSchemaLocation="
                      http://pmd.sf.net/ruleset_xml_schema.xsd">
 
+    <description></description>
+
     <!-- Import the entire default rule sets -->
     <rule ref="rulesets/unusedcode.xml" />
     <rule ref="rulesets/codesize.xml" />
